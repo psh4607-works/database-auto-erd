@@ -1,5 +1,13 @@
 # Repository Guidelines
 
+## Local database-auto-erd workspace
+- Run locally with OrbStack Docker Compose: `pnpm local:setup`, then `pnpm local:start`.
+- The application is available only at `http://127.0.0.1:3400`. No Kubernetes or Nginx is needed for this scope.
+- PostgreSQL collection is read only. Keep schema snapshots separate from diagram positions, annotations, hidden tables, and logical relationships.
+- Project credential handling is documented in [docs/CREDENTIALS.md](docs/CREDENTIALS.md). Read and store project credential references there; it is local-only, excluded via `.git/info/exclude`, and must never be committed. Keep key values and DB passwords out of shared files and logs.
+- Use Node 22 and the pinned pnpm version. Preserve the global Git hook dispatcher and repository hooks when installing dependencies; the upstream prepare script can replace a global hook.
+- Keep GitHub Actions disabled until a workflow is explicitly requested.
+
 ## Project Structure & Modules
 - frontend/apps/*: Next.js apps (e.g., `@liam-hq/app`, `@liam-hq/docs`).
 - frontend/packages/*: Shared libraries and tools (e.g., `schema`, `erd-core`, `cli`, `ui`).

@@ -4,15 +4,24 @@ import { useUserEditingOrThrow } from '../../../../../stores'
 import { useCustomReactflow } from '../../../../reactflow/hooks'
 import type { DisplayArea } from '../../../types'
 import { computeAutoLayout, highlightNodesAndEdges } from '../../../utils'
+import {
+  restorePositions,
+  type SavedPositions,
+} from '../../../utils/persistentLayout'
 import { useErdContentContext } from '../ErdContentContext'
 import { hasNonRelatedChildNodes, updateNodesHiddenState } from '../utils'
 
 type Params = {
   nodes: Node[]
   displayArea: DisplayArea
+  positions?: SavedPositions | undefined
 }
 
-export const useInitialAutoLayout = ({ nodes, displayArea }: Params) => {
+export const useInitialAutoLayout = ({
+  nodes,
+  displayArea,
+  positions,
+}: Params) => {
   const { activeTableName, hiddenNodeIds } = useUserEditingOrThrow()
   const { getEdges, setNodes, setEdges, fitView } = useCustomReactflow()
   const {
@@ -50,7 +59,9 @@ export const useInitialAutoLayout = ({ nodes, displayArea }: Params) => {
       const { nodes: layoutedNodes, edges: layoutedEdges } =
         await computeAutoLayout(highlightedNodes, highlightedEdges)
 
-      setNodes(layoutedNodes)
+      setNodes(
+        positions ? restorePositions(layoutedNodes, positions) : layoutedNodes,
+      )
       setEdges(layoutedEdges)
 
       const fitViewOptions =
@@ -69,6 +80,7 @@ export const useInitialAutoLayout = ({ nodes, displayArea }: Params) => {
     displayArea,
     hiddenNodeIds,
     nodes,
+    positions,
     getEdges,
     setNodes,
     setEdges,

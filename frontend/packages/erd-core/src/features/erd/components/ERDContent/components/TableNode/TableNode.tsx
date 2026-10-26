@@ -5,7 +5,7 @@ import {
   TooltipRoot,
   TooltipTrigger,
 } from '@liam-hq/ui'
-import type { NodeProps } from '@xyflow/react'
+import { Handle, type NodeProps, Position } from '@xyflow/react'
 import clsx from 'clsx'
 import type { FC } from 'react'
 import { useUserEditingOrThrow } from '../../../../../../stores'
@@ -26,6 +26,11 @@ export const TableNode: FC<Props> = ({ data }) => {
       <TooltipRoot>
         <TooltipTrigger asChild>
           <div
+            style={
+              data.annotation
+                ? { borderColor: data.annotation.color }
+                : undefined
+            }
             className={clsx(
               styles.wrapper,
               data.isHighlighted && styles.wrapperHighlighted,
@@ -37,6 +42,28 @@ export const TableNode: FC<Props> = ({ data }) => {
             }
           >
             <TableHeader data={data} />
+            {data.persistent && (
+              <>
+                <Handle
+                  type="source"
+                  id="logical-source"
+                  position={Position.Right}
+                />
+                <Handle
+                  type="target"
+                  id="logical-target"
+                  position={Position.Left}
+                />
+              </>
+            )}
+            {(data.annotation?.group || data.annotation?.note) && (
+              <div className={styles.annotation}>
+                {data.annotation.group && (
+                  <strong>{data.annotation.group}</strong>
+                )}
+                {data.annotation.note && <p>{data.annotation.note}</p>}
+              </div>
+            )}
             {showMode === 'ALL_FIELDS' && <TableColumnList data={data} />}
             {showMode === 'KEY_ONLY' && (
               <TableColumnList data={data} filter="KEY_ONLY" />

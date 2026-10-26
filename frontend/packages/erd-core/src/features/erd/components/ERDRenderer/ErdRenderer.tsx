@@ -15,6 +15,7 @@ import {
   type FC,
   type ReactNode,
   useCallback,
+  useEffect,
   useMemo,
   useState,
 } from 'react'
@@ -25,6 +26,7 @@ import { useIsTouchDevice } from '../../../../hooks'
 import { useVersionOrThrow } from '../../../../providers'
 import { useSchemaOrThrow, useUserEditingOrThrow } from '../../../../stores'
 import { toggleLogEvent } from '../../../gtm/utils'
+import type { PersistentDiagram } from '../../types/persistentDiagram'
 import {
   convertSchemaToNodes,
   createHash,
@@ -46,6 +48,7 @@ type Props = {
   defaultPanelSizes?: number[]
   withAppBar?: boolean
   customToolbarActions?: ReactNode
+  diagram?: PersistentDiagram | undefined
 }
 
 const SIDEBAR_COOKIE_NAME = 'sidebar:state'
@@ -58,11 +61,16 @@ export const ERDRenderer: FC<Props> = ({
   defaultPanelSizes = [20, 80],
   withAppBar = false,
   customToolbarActions,
+  diagram,
 }) => {
   const [open, setOpen] = useState(defaultSidebarOpen)
   const [isResizing, setIsResizing] = useState(false)
 
-  const { showMode, showDiff } = useUserEditingOrThrow()
+  const { showMode, showDiff, setHiddenNodeIds } = useUserEditingOrThrow()
+
+  useEffect(() => {
+    if (diagram) setHiddenNodeIds(diagram.hidden)
+  }, [diagram?.hidden, setHiddenNodeIds, diagram])
 
   const { current, merged } = useSchemaOrThrow()
 
@@ -75,10 +83,47 @@ export const ERDRenderer: FC<Props> = ({
     return createHash(str)
   }, [schema])
 
-  const { nodes, edges } = convertSchemaToNodes({
+  const graph = convertSchemaToNodes({
     schema,
     showMode,
   })
+  const nodes = diagram
+    ? graph.nodes
+        .filter((node) => node.type === 'table')
+        .map(({ parentId: _parentId, ...node }) => ({
+          ...node,
+          data: {
+            ...node.data,
+            persistent: true,
+            annotation: diagram.annotations[node.id],
+          },
+        }))
+    : graph.nodes
+  const edges = [
+    ...graph.edges,
+    ...(diagram?.relationships ?? [])
+      .filter(
+        (relationship) =>
+          schema.tables[relationship.source]?.columns[
+            relationship.sourceColumn
+          ] &&
+          schema.tables[relationship.target]?.columns[
+            relationship.targetColumn
+          ],
+      )
+      .map((relationship) => ({
+        id: `logical:${relationship.id}`,
+        source: relationship.source,
+        target: relationship.target,
+        sourceHandle: 'logical-source',
+        targetHandle: 'logical-target',
+        type: 'smoothstep',
+        label: relationship.label || 'Logical relationship',
+        style: { stroke: '#b69cff', strokeDasharray: '6 4', strokeWidth: 2 },
+        labelStyle: { fill: '#ddd' },
+        labelBgStyle: { fill: '#25222e' },
+      })),
+  ]
 
   const leftPanelRef = createRef<ImperativePanelHandle>()
 
@@ -168,10 +213,11 @@ export const ERDRenderer: FC<Props> = ({
                     {errorObjects.length > 0 || (
                       <>
                         <ERDContent
-                          key={`${schemaKey}-${showMode}`}
+                          key={`${schemaKey}-${showMode}-${JSON.stringify(diagram?.annotations)}-${JSON.stringify(diagram?.relationships)}`}
                           nodes={nodes}
                           edges={edges}
                           displayArea="main"
+                          positions={diagram?.positions}
                         />
                         <TableDetailDrawer />
                       </>

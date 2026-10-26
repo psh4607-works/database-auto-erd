@@ -1,27 +1,15 @@
-import clsx from 'clsx'
 import type { Metadata } from 'next'
-import { Inter, Montserrat } from 'next/font/google'
 import type React from 'react'
 import './globals.css'
 import { ToastProvider } from '@liam-hq/ui'
 import { GoogleTagManager } from '@next/third-parties/google'
 import { GTM_ID, GTMConsent, GtagScript } from '../libs/gtm'
 
-const inter = Inter({
-  subsets: ['latin'],
-})
-
-const montserrat = Montserrat({
-  subsets: ['latin'],
-  variable: '--message-font',
-})
-
 const imageUrl = '/assets/liam_erd.png'
 
 export const metadata: Metadata = {
-  title: 'Liam ERD',
-  description:
-    'Generate ER diagrams effortlessly by entering a schema file URL. Ideal for visualizing, reviewing, and documenting schemas.',
+  title: 'database-auto-erd',
+  description: 'A local PostgreSQL schema workspace with persistent diagrams.',
   openGraph: {
     siteName: 'Liam',
     type: 'website',
@@ -38,13 +26,17 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <GoogleTagManager
-        gtmId={GTM_ID}
-        dataLayer={{ appEnv: process.env.NEXT_PUBLIC_ENV_NAME ?? '' }}
-      />
-      <GtagScript />
-      <GTMConsent />
-      <body className={clsx(inter.className, montserrat.variable)}>
+      {process.env.ERD_LOCAL_ONLY !== '1' && (
+        <>
+          <GoogleTagManager
+            gtmId={GTM_ID}
+            dataLayer={{ appEnv: process.env.NEXT_PUBLIC_ENV_NAME ?? '' }}
+          />
+          <GtagScript />
+          <GTMConsent />
+        </>
+      )}
+      <body>
         <ToastProvider>{children}</ToastProvider>
       </body>
     </html>

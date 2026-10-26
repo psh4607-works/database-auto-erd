@@ -18,6 +18,7 @@ import { MAX_ZOOM, MIN_ZOOM } from '../../../reactflow/constants'
 import { useTableSelection } from '../../hooks'
 import type { DisplayArea } from '../../types'
 import { highlightNodesAndEdges, isTableNode } from '../../utils'
+import type { SavedPositions } from '../../utils/persistentLayout'
 import {
   NonRelatedTableGroupNode,
   RelationshipEdge,
@@ -41,12 +42,14 @@ type Props = {
   nodes: Node[]
   edges: Edge[]
   displayArea: DisplayArea
+  positions?: SavedPositions | undefined
 }
 
 export const ERDContentInner: FC<Props> = ({
   nodes: _nodes,
   edges: _edges,
   displayArea,
+  positions,
 }) => {
   const [nodes, setNodes, onNodesChange] = useNodesState<Node>(
     displayArea === 'relatedTables'
@@ -69,6 +72,7 @@ export const ERDContentInner: FC<Props> = ({
   useInitialAutoLayout({
     nodes,
     displayArea,
+    positions,
   })
   useQueryParamsChanged({
     displayArea,

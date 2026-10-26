@@ -2,6 +2,14 @@ import type { NextRequest } from 'next/server'
 import { NextResponse } from 'next/server'
 
 export function middleware(request: NextRequest) {
+  if (process.env.ERD_LOCAL_ONLY === '1') {
+    const host = request.headers.get('host') ?? ''
+    if (!/^(localhost|127\.0\.0\.1|\[::1\])(?::\d+)?$/.test(host)) {
+      return new NextResponse('Local access only', { status: 403 })
+    }
+    return NextResponse.next()
+  }
+  if (!request.nextUrl.pathname.startsWith('/erd/')) return NextResponse.next()
   if (process.env.VERCEL_ENV !== 'production') {
     return NextResponse.next()
   }
@@ -36,5 +44,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: '/erd/:path*',
+  matcher: '/:path*',
 }

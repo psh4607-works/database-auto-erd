@@ -14,3 +14,8 @@ coverage/
 
 # Lefthook local config
 lefthook-local.yml
+
+# Local ERD data and encryption material
+.local/
+output/
+.playwright-cli/
