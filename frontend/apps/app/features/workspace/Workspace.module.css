@@ -1,0 +1,163 @@
+.app {
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background: var(--global-background);
+  color: var(--global-foreground);
+  font-family: system-ui, sans-serif;
+}
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 18px 24px;
+  border-bottom: 1px solid var(--overlay-20);
+}
+.header h1 {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+.muted {
+  font-size: 13px;
+  opacity: 0.65;
+  line-height: 1.6;
+}
+.actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  align-items: center;
+  padding: 12px 24px;
+}
+.controls label {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  font-size: 13px;
+}
+.app select,
+.app textarea {
+  border: 1px solid var(--overlay-20);
+  border-radius: 6px;
+  background: var(--global-background);
+  color: var(--global-foreground);
+  padding: 8px;
+  font: inherit;
+}
+.app select {
+  max-width: 300px;
+}
+.app label {
+  font-size: 13px;
+}
+.statusBar {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 8px 24px;
+  font-size: 12px;
+  border-bottom: 1px solid var(--overlay-20);
+  min-height: 34px;
+}
+.status {
+  padding-top: 12px;
+  font-size: 13px;
+}
+.content {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+}
+.canvas {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+}
+.editor {
+  width: 320px;
+  flex-shrink: 0;
+  padding: 20px;
+  overflow: auto;
+  border-left: 1px solid var(--overlay-20);
+}
+.editor h2 {
+  font-weight: 600;
+  margin: 12px 0;
+}
+.editor label,
+.formGrid label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+.editor fieldset {
+  margin: 16px 0;
+}
+.editor select {
+  width: 100%;
+}
+.checkbox {
+  flex-direction: row !important;
+  align-items: center;
+  gap: 8px;
+}
+.checkbox input {
+  appearance: auto;
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  accent-color: #1bea9e;
+}
+.connectionCard {
+  width: min(720px, 100%);
+  margin: 32px auto;
+  padding: 28px;
+  border: 1px solid var(--overlay-20);
+  border-radius: 12px;
+  overflow: auto;
+}
+.connectionCard h2 {
+  font-size: 24px;
+  margin-bottom: 12px;
+}
+.formGrid {
+  margin-top: 20px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.formGrid .actions {
+  grid-column: 1 / -1;
+}
+.empty {
+  margin: auto;
+  text-align: center;
+  padding: 40px;
+  line-height: 1.8;
+}
+.empty h2 {
+  font-size: 24px;
+  font-weight: 600;
+}
+.empty p {
+  opacity: 0.7;
+  font-size: 14px;
+}
+.relationship {
+  padding: 12px 0;
+  border-bottom: 1px solid var(--overlay-20);
+  overflow-wrap: anywhere;
+  font-size: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}

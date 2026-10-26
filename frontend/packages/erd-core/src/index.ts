@@ -1,4 +1,6 @@
 export * from './features'
+export type { PersistentDiagram } from './features/erd/types/persistentDiagram'
+export { splitTableName } from './features/erd/utils/schemaGroups'
 export * from './hooks'
 export * from './providers'
 export * from './schemas'

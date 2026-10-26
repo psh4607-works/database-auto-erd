@@ -1,1 +1,5 @@
 @import url('@liam-hq/ui/src/styles/globals.css');
+
+:root {
+  --message-font: Arial, Helvetica, sans-serif;
+}

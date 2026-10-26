@@ -11,6 +11,7 @@ import { DiffIcon } from '../../../../../../diff/components/DiffIcon'
 import diffStyles from '../../../../../../diff/styles/Diff.module.css'
 import { useCustomReactflow } from '../../../../../../reactflow/hooks'
 import type { TableNodeData } from '../../../../../types'
+import { splitTableName } from '../../../../../utils/schemaGroups'
 import { getChangeStatus } from './getChangeStatus'
 import styles from './TableHeader.module.css'
 
@@ -98,7 +99,7 @@ export const TableHeader: FC<Props> = ({ data }) => {
         <Table2 className={styles.tableIcon} />
 
         <span className={styles.name} onMouseEnter={handleHoverEvent}>
-          {name}
+          {data.persistent ? splitTableName(name).table : name}
         </span>
 
         {showMode === 'TABLE_NAME' && (

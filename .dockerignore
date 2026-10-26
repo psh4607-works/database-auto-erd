@@ -1,0 +1,13 @@
+.git
+**/node_modules
+**/.next
+**/.turbo
+**/dist
+**/dist-cli
+**/coverage
+.local
+.env*
+**/.env*
+**/CREDENTIALS.md
+output
+.playwright-cli

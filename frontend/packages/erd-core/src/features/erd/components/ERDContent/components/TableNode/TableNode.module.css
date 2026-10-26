@@ -11,6 +11,15 @@
     border-width 300ms var(--default-timing-function);
 }
 
+.annotation {
+  max-width: 320px;
+  padding: 8px 12px;
+  color: var(--global-foreground);
+  font-size: 12px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
 :global([data-loading='true']) .wrapper {
   opacity: 0;
 }

@@ -4,6 +4,8 @@ import type { ShowMode } from '../../schemas/showMode/types'
 
 export type TableNodeData = {
   table: Table
+  persistent?: boolean | undefined
+  annotation?: { color: string; group: string; note: string } | undefined
   isActiveHighlighted: boolean
   isHighlighted: boolean
   isTooltipVisible: boolean

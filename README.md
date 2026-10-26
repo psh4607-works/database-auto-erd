@@ -1,3 +1,11 @@
+# database-auto-erd
+
+A local PostgreSQL workspace built on Liam ERD. Save encrypted connections, refresh schema metadata on demand, compare changes, and preserve diagram positions, colors, groups, notes, hidden tables, and logical relationships.
+
+Run `pnpm local:setup` followed by `pnpm local:start`, then open <http://127.0.0.1:3400>. See [local setup and usage](docs/local-workspace.md) for OrbStack Docker Compose, persistence, and backup instructions.
+
+The upstream Liam project and its Apache-2.0 license are retained below.
+
 <h1 align="center">
   <img src="./assets/logo-light.png#gh-light-mode-only" alt="Liam ERD" width="445">
   <img src="./assets/logo-dark.png#gh-dark-mode-only" alt="Liam ERD" width="445">

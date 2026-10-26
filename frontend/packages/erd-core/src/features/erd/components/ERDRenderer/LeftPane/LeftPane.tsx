@@ -20,6 +20,7 @@ import { useVersionOrThrow } from '../../../../../providers'
 import { useUserEditingOrThrow } from '../../../../../stores'
 import { useCustomReactflow } from '../../../../reactflow/hooks'
 import { isTableNode } from '../../../utils'
+import { groupTablesBySchema } from '../../../utils/schemaGroups'
 import { updateNodesHiddenState } from '../../ERDContent/utils'
 import { useTableVisibility } from '../hooks'
 import { CopyLinkButton } from './CopyLinkButton'
@@ -27,7 +28,11 @@ import styles from './LeftPane.module.css'
 import { MenuItemLink, type Props as MenuItemLinkProps } from './MenuItemLink'
 import { TableNameMenuButton } from './TableNameMenuButton'
 
-export const LeftPane = () => {
+export const LeftPane = ({
+  groupBySchema = false,
+}: {
+  groupBySchema?: boolean
+}) => {
   const { version } = useVersionOrThrow()
   const { selectedNodeIds, setHiddenNodeIds } = useUserEditingOrThrow()
 
@@ -149,14 +154,37 @@ export const LeftPane = () => {
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu className={styles.tablesMenu}>
-              {tableNodes.map((node) => (
-                <TableNameMenuButton
-                  key={node.id}
-                  node={node}
-                  nodes={tableNodes}
-                  showSelectedTables={showSelectedTables}
-                />
-              ))}
+              {groupBySchema
+                ? groupTablesBySchema(tableNodes).map(([schema, tables]) => (
+                    <li className={styles.schemaGroup} key={schema}>
+                      <details open>
+                        <summary className={styles.schemaTitle}>
+                          <span>{schema || 'Default schema'}</span>
+                          <span className={styles.schemaCount}>
+                            {tables.length}
+                          </span>
+                        </summary>
+                        <ul>
+                          {tables.map((node) => (
+                            <TableNameMenuButton
+                              key={node.id}
+                              node={node}
+                              nodes={tableNodes}
+                              showSelectedTables={showSelectedTables}
+                            />
+                          ))}
+                        </ul>
+                      </details>
+                    </li>
+                  ))
+                : tableNodes.map((node) => (
+                    <TableNameMenuButton
+                      key={node.id}
+                      node={node}
+                      nodes={tableNodes}
+                      showSelectedTables={showSelectedTables}
+                    />
+                  ))}
             </SidebarMenu>
 
             <SidebarMenu className={styles.contentControls}>

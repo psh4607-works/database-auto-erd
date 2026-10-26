@@ -8,8 +8,9 @@ import {
   ReactFlow,
   useEdgesState,
   useNodesState,
+  useReactFlow,
 } from '@xyflow/react'
-import { type FC, useCallback } from 'react'
+import { type FC, useCallback, useState } from 'react'
 import { useVersionOrThrow } from '../../../../providers'
 import { useUserEditingOrThrow } from '../../../../stores'
 import { selectTableLogEvent } from '../../../gtm/utils'
@@ -19,6 +20,10 @@ import { useTableSelection } from '../../hooks'
 import type { DisplayArea } from '../../types'
 import { highlightNodesAndEdges, isTableNode } from '../../utils'
 import {
+  captureLivePositions,
+  type SavedPositions,
+} from '../../utils/persistentLayout'
+import {
   NonRelatedTableGroupNode,
   RelationshipEdge,
   Spinner,
@@ -27,6 +32,7 @@ import {
 import styles from './ERDContent.module.css'
 import { ErdContentProvider, useErdContentContext } from './ErdContentContext'
 import { useInitialAutoLayout, useQueryParamsChanged } from './hooks'
+import { SchemaBackgrounds } from './SchemaBackgrounds'
 
 const nodeTypes = {
   table: TableNode,
@@ -41,12 +47,14 @@ type Props = {
   nodes: Node[]
   edges: Edge[]
   displayArea: DisplayArea
+  positions?: SavedPositions | undefined
 }
 
 export const ERDContentInner: FC<Props> = ({
   nodes: _nodes,
   edges: _edges,
   displayArea,
+  positions,
 }) => {
   const [nodes, setNodes, onNodesChange] = useNodesState<Node>(
     displayArea === 'relatedTables'
@@ -69,6 +77,7 @@ export const ERDContentInner: FC<Props> = ({
   useInitialAutoLayout({
     nodes,
     displayArea,
+    positions,
   })
   useQueryParamsChanged({
     displayArea,
@@ -172,6 +181,7 @@ export const ERDContentInner: FC<Props> = ({
         attributionPosition="bottom-left"
         nodesConnectable={false}
       >
+        {displayArea === 'main' && <SchemaBackgrounds />}
         <Background
           color="var(--color-gray-600)"
           variant={BackgroundVariant.Dots}
@@ -184,9 +194,15 @@ export const ERDContentInner: FC<Props> = ({
 }
 
 export const ERDContent: FC<Props> = (props) => {
+  const { getNodes } = useReactFlow()
+  const [initialPositions] = useState(() =>
+    props.positions
+      ? captureLivePositions(props.positions, getNodes())
+      : undefined,
+  )
   return (
     <ErdContentProvider>
-      <ERDContentInner {...props} />
+      <ERDContentInner {...props} positions={initialPositions} />
     </ErdContentProvider>
   )
 }
