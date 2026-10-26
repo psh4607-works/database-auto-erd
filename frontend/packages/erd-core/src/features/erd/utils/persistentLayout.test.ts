@@ -1,6 +1,10 @@
 import type { Node } from '@xyflow/react'
 import { describe, expect, it } from 'vitest'
-import { areTableNodesMeasured, restorePositions } from './persistentLayout'
+import {
+  areTableNodesMeasured,
+  captureLivePositions,
+  restorePositions,
+} from './persistentLayout'
 
 describe('persistent diagram layout', () => {
   it('keeps saved coordinates and places new tables beyond the saved layout', () => {
@@ -48,4 +52,47 @@ describe('initial layout measurement', () => {
     ).toBe(true)
     expect(areTableNodesMeasured([])).toBe(false)
   })
+})
+
+it('preserves live unsaved positions across content remounts without losing off-canvas positions', () => {
+  const saved = { 'app.one': { x: 1, y: 2 }, 'infra.two': { x: 30, y: 40 } }
+  const live: Node[] = [
+    { id: 'app.one', type: 'table', data: {}, position: { x: 600, y: 700 } },
+  ]
+  expect(captureLivePositions(saved, live)).toEqual({
+    'app.one': { x: 600, y: 700 },
+    'infra.two': { x: 30, y: 40 },
+  })
+})
+
+it('places newly discovered tall tables without overlap and beyond wide saved tables', () => {
+  const nodes: Node[] = [
+    {
+      id: 'saved',
+      type: 'table',
+      data: {},
+      position: { x: 0, y: 0 },
+      measured: { width: 900, height: 100 },
+    },
+    {
+      id: 'new1',
+      type: 'table',
+      data: {},
+      position: { x: 100, y: 10 },
+      measured: { width: 200, height: 900 },
+    },
+    {
+      id: 'new2',
+      type: 'table',
+      data: {},
+      position: { x: 100, y: 1000 },
+      measured: { width: 200, height: 900 },
+    },
+  ]
+  const result = restorePositions(nodes, { saved: { x: 1000, y: 0 } })
+  expect(result[0]?.position).toEqual({ x: 1000, y: 0 })
+  expect(result[1]?.position.x).toBeGreaterThan(1900)
+  expect(result[2]?.position.y).toBeGreaterThan(
+    (result[1]?.position.y ?? 0) + 900,
+  )
 })

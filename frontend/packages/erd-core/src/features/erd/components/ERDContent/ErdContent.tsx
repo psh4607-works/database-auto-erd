@@ -8,8 +8,9 @@ import {
   ReactFlow,
   useEdgesState,
   useNodesState,
+  useReactFlow,
 } from '@xyflow/react'
-import { type FC, useCallback } from 'react'
+import { type FC, useCallback, useState } from 'react'
 import { useVersionOrThrow } from '../../../../providers'
 import { useUserEditingOrThrow } from '../../../../stores'
 import { selectTableLogEvent } from '../../../gtm/utils'
@@ -18,7 +19,10 @@ import { MAX_ZOOM, MIN_ZOOM } from '../../../reactflow/constants'
 import { useTableSelection } from '../../hooks'
 import type { DisplayArea } from '../../types'
 import { highlightNodesAndEdges, isTableNode } from '../../utils'
-import type { SavedPositions } from '../../utils/persistentLayout'
+import {
+  captureLivePositions,
+  type SavedPositions,
+} from '../../utils/persistentLayout'
 import {
   NonRelatedTableGroupNode,
   RelationshipEdge,
@@ -190,9 +194,15 @@ export const ERDContentInner: FC<Props> = ({
 }
 
 export const ERDContent: FC<Props> = (props) => {
+  const { getNodes } = useReactFlow()
+  const [initialPositions] = useState(() =>
+    props.positions
+      ? captureLivePositions(props.positions, getNodes())
+      : undefined,
+  )
   return (
     <ErdContentProvider>
-      <ERDContentInner {...props} />
+      <ERDContentInner {...props} positions={initialPositions} />
     </ErdContentProvider>
   )
 }

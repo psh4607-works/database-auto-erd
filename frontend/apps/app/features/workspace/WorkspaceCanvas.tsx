@@ -1,14 +1,11 @@
 'use client'
 
-import {
-  ERDRenderer,
-  useUserEditingOrThrow,
-  VersionProvider,
-} from '@liam-hq/erd-core'
+import { ERDRenderer, VersionProvider } from '@liam-hq/erd-core'
 import { ErdRendererProvider } from '@liam-hq/erd-core/nextjs'
 import type { Schema } from '@liam-hq/schema'
 import { useReactFlow } from '@xyflow/react'
 import { useEffect } from 'react'
+import { captureVisibility } from './captureVisibility'
 import type { Diagram } from './model'
 
 export type CaptureView = () => Pick<Diagram, 'positions' | 'hidden'>
@@ -25,7 +22,6 @@ const CaptureBridge = ({
   registerCapture,
 }: Pick<Props, 'diagram' | 'registerCapture'>) => {
   const { getNodes } = useReactFlow()
-  const { hiddenNodeIds } = useUserEditingOrThrow()
   useEffect(() => {
     registerCapture(() => ({
       positions: {
@@ -36,9 +32,15 @@ const CaptureBridge = ({
             .map((node) => [node.id, node.position]),
         ),
       },
-      hidden: hiddenNodeIds,
+      hidden: captureVisibility(
+        diagram.hidden,
+        getNodes().map((node) => node.id),
+        getNodes()
+          .filter((node) => node.hidden)
+          .map((node) => node.id),
+      ),
     }))
-  }, [diagram.positions, getNodes, hiddenNodeIds, registerCapture])
+  }, [diagram.positions, diagram.hidden, getNodes, registerCapture])
   return null
 }
 
