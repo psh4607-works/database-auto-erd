@@ -1,9 +1,9 @@
 import type { Node } from '@xyflow/react'
 export type SavedPositions = Record<string, { x: number; y: number }>
 export const restorePositions = (nodes: Node[], positions: SavedPositions) => {
-  const saved = Object.entries(positions)
-  if (saved.length === 0) return nodes
   const byId = new Map(nodes.map((node) => [node.id, node]))
+  const saved = Object.entries(positions).filter(([id]) => byId.has(id))
+  if (saved.length === 0) return nodes
   const nextX =
     Math.max(
       ...saved.map(

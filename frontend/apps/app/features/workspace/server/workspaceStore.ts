@@ -71,20 +71,31 @@ export class WorkspaceStore {
     )
   }
 
-  list(): Workspace[] {
+  list(onInvalid?: () => void): Workspace[] {
     return this.db
-      .prepare('SELECT id FROM workspaces ORDER BY rowid')
+      .prepare('SELECT * FROM workspaces ORDER BY rowid')
       .all()
-      .map((row) => this.get(v.parse(v.string(), row['id'])))
+      .flatMap((row) => {
+        try {
+          return [this.parseRow(row)]
+        } catch {
+          onInvalid?.()
+          return []
+        }
+      })
   }
 
   get(id: string): Workspace {
     const row = this.db.prepare('SELECT * FROM workspaces WHERE id = ?').get(id)
     if (!row) throw new WorkspaceError('Saved connection not found.')
+    return this.parseRow(row)
+  }
+
+  private parseRow(row: Record<string, unknown>): Workspace {
     const json = (value: unknown) =>
       typeof value === 'string' ? JSON.parse(value) : null
     return v.parse(workspaceSchema, {
-      id,
+      id: row['id'],
       connection: json(row['connection']),
       configRevision: row['config_revision'],
       diagramRevision: row['diagram_revision'],

@@ -6,6 +6,8 @@ This fork adds a local workspace to Liam ERD. It stores PostgreSQL connections, 
 
 Requirements: OrbStack Docker, Node 22, and the pnpm version pinned in `package.json`.
 
+This setup is supported on macOS with OrbStack. OrbStack maps the owner-only (`0600`) key to the container's `node` user (UID 1000). Native Linux Docker does not provide that mapping: when the host UID differs, the file secret cannot be read and startup fails. Native Linux deployment is outside this version's support scope; adapt ownership for its runtime user before using it, and keep the key owner-only.
+
 ```sh
 pnpm local:setup
 pnpm local:start
@@ -40,6 +42,8 @@ A failed refresh preserves the last successful schema and its timestamp. A concu
 - `docker compose stop`, restart, and rebuild preserve data. **Do not use `docker compose down -v` when you want to keep your work.**
 - Back up the volume while the app is stopped, together with the key file. Never put these in Git. The project-local `docs/CREDENTIALS.md` contains storage references only.
 - This is a single-user local app. Before allowing access from another machine, add authentication and revisit the network boundary.
+
+Unreadable workspace rows are omitted from the connection selector with a warning. Their data is left intact; restore a compatible backup or repair a copy of the SQLite file while the app is stopped. Do not regenerate the encryption key during recovery.
 
 ## Validation
 

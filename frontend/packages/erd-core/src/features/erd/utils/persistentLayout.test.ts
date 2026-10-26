@@ -96,3 +96,12 @@ it('places newly discovered tall tables without overlap and beyond wide saved ta
     (result[1]?.position.y ?? 0) + 900,
   )
 })
+
+it('ignores saved positions outside the rendered schema when placing new tables', () => {
+  const nodes: Node[] = [
+    { id: 'new', type: 'table', data: {}, position: { x: 20, y: 30 } },
+  ]
+  expect(restorePositions(nodes, { dropped: { x: 100000, y: 0 } })).toEqual(
+    nodes,
+  )
+})

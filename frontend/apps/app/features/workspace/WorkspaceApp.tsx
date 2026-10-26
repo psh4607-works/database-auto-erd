@@ -1,5 +1,6 @@
 'use client'
 
+import { splitTableName } from '@liam-hq/erd-core'
 import type { Schema } from '@liam-hq/schema'
 import { Button } from '@liam-hq/ui'
 import dynamic from 'next/dynamic'
@@ -13,8 +14,7 @@ const WorkspaceCanvas = dynamic(
   () => import('./WorkspaceCanvas').then((module) => module.WorkspaceCanvas),
   { ssr: false },
 )
-const namespace = (table: string) =>
-  table.match(/^("(?:[^"]|"")+"|[^.]+)\./)?.[1] ?? table
+const namespace = (table: string) => splitTableName(table).schema
 const filterSchema = (schema: Schema | null, selected: string): Schema | null =>
   schema && {
     ...schema,
@@ -27,8 +27,10 @@ const filterSchema = (schema: Schema | null, selected: string): Schema | null =>
 
 export const WorkspaceApp = ({
   initialWorkspaces,
+  unreadableCount = 0,
 }: {
   initialWorkspaces: Workspace[]
+  unreadableCount?: number
 }) => {
   const {
     workspaces,
@@ -67,6 +69,13 @@ export const WorkspaceApp = ({
     }).length > 0
   return (
     <div className={styles.app}>
+      {unreadableCount > 0 && (
+        <p role="alert">
+          {unreadableCount} saved connections could not be read. Their stored
+          data is unchanged. Restore a compatible backup or repair the local
+          workspace database.
+        </p>
+      )}
       <header className={styles.header}>
         <div>
           <h1>database-auto-erd</h1>
@@ -233,7 +242,9 @@ const WorkspaceControls = ({
             Object.keys({
               ...workspace.snapshot?.tables,
               ...(showDiff ? workspace.baseline?.tables : {}),
-            }).map(namespace),
+            })
+              .map(namespace)
+              .filter(Boolean),
           ),
         ].map((name) => (
           <option key={name}>{name}</option>

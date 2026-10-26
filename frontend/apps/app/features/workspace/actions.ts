@@ -16,6 +16,8 @@ const attempt = async <T>(
   operation: () => T | Promise<T>,
 ): Promise<ActionResult<T>> => {
   try {
+    if (process.env.ERD_LOCAL_ONLY !== '1')
+      throw new WorkspaceError('Local workspace is disabled.')
     return { ok: true, value: await operation() }
   } catch (error) {
     return {

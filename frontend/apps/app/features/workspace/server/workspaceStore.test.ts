@@ -2,6 +2,7 @@ import { randomBytes } from 'node:crypto'
 import { mkdtempSync, readFileSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
+import { DatabaseSync } from 'node:sqlite'
 import { aColumn, aSchema, aTable } from '@liam-hq/schema'
 import { afterEach, describe, expect, it } from 'vitest'
 import { WorkspaceStore } from './workspaceStore'
@@ -130,4 +131,29 @@ describe('durable local workspace', () => {
     expect(store.get(saved.id).snapshot).toBeNull()
     store.close()
   })
+})
+
+it('lists healthy rows and flags unreadable rows without changing stored data', () => {
+  const { store, path } = createStore()
+  const good = store.saveConnection(connection)
+  const broken = store.saveConnection({ ...connection, name: 'broken' })
+  const db = new DatabaseSync(path)
+  db.prepare('UPDATE workspaces SET snapshot=? WHERE id=?').run(
+    '{bad json',
+    broken.id,
+  )
+  let invalid = 0
+  expect(
+    store.list(() => {
+      invalid += 1
+    }),
+  ).toEqual([good])
+  expect(invalid).toBe(1)
+  expect(
+    db.prepare('SELECT snapshot FROM workspaces WHERE id=?').get(broken.id)?.[
+      'snapshot'
+    ],
+  ).toBe('{bad json')
+  db.close()
+  store.close()
 })
