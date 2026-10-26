@@ -40,9 +40,6 @@
     "@swc/wasm" // Required for Vercel deployment to prevent native binding errors
   ],
 
-  // TODO: Review ignoreBinaries configuration later
-  "ignoreBinaries": ["playwright"],
-
   // Workspace-specific configurations
   "workspaces": {
     "frontend/packages/cli": {
