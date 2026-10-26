@@ -143,3 +143,32 @@
     display: none;
   }
 }
+
+.schemaGroup {
+  padding: 4px 0 10px;
+  border-bottom: 1px solid var(--overlay-10);
+}
+.schemaTitle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 10px 8px;
+  color: var(--overlay-70);
+  font-family: var(--code-font);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.schemaTitle::before {
+  content: '›';
+  transform: rotate(90deg);
+  transition: transform 0.15s;
+}
+.schemaGroup details:not([open]) .schemaTitle::before {
+  transform: rotate(0deg);
+}
+.schemaCount {
+  margin-left: auto;
+  color: var(--overlay-40);
+  font-weight: 400;
+}

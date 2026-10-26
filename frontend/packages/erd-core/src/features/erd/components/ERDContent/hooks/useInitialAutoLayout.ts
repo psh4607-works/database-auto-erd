@@ -5,9 +5,11 @@ import { useCustomReactflow } from '../../../../reactflow/hooks'
 import type { DisplayArea } from '../../../types'
 import { computeAutoLayout, highlightNodesAndEdges } from '../../../utils'
 import {
+  areTableNodesMeasured,
   restorePositions,
   type SavedPositions,
 } from '../../../utils/persistentLayout'
+import { separateSchemaGroups } from '../../../utils/schemaGroups'
 import { useErdContentContext } from '../ErdContentContext'
 import { hasNonRelatedChildNodes, updateNodesHiddenState } from '../utils'
 
@@ -31,9 +33,7 @@ export const useInitialAutoLayout = ({
   const [initializeComplete, setInitializeComplete] = useState(false)
 
   const tableNodesInitialized = useMemo(() => {
-    return nodes
-      .filter((node) => node.type === 'table')
-      .some((node) => node.measured)
+    return areTableNodesMeasured(nodes)
   }, [nodes])
 
   const initialize = useCallback(async () => {
@@ -60,7 +60,9 @@ export const useInitialAutoLayout = ({
         await computeAutoLayout(highlightedNodes, highlightedEdges)
 
       setNodes(
-        positions ? restorePositions(layoutedNodes, positions) : layoutedNodes,
+        positions
+          ? separateSchemaGroups(restorePositions(layoutedNodes, positions))
+          : layoutedNodes,
       )
       setEdges(layoutedEdges)
 

@@ -13,3 +13,15 @@ export const restorePositions = (nodes: Node[], positions: SavedPositions) => {
     return { ...node, position }
   })
 }
+
+export const areTableNodesMeasured = (nodes: Node[]) => {
+  const visibleTables = nodes.filter(
+    (node) => node.type === 'table' && !node.hidden,
+  )
+  return (
+    visibleTables.length > 0 &&
+    visibleTables.every((node) =>
+      Boolean(node.measured?.width && node.measured?.height),
+    )
+  )
+}

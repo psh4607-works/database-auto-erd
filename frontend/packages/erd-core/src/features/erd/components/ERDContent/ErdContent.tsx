@@ -28,6 +28,7 @@ import {
 import styles from './ERDContent.module.css'
 import { ErdContentProvider, useErdContentContext } from './ErdContentContext'
 import { useInitialAutoLayout, useQueryParamsChanged } from './hooks'
+import { SchemaBackgrounds } from './SchemaBackgrounds'
 
 const nodeTypes = {
   table: TableNode,
@@ -176,6 +177,7 @@ export const ERDContentInner: FC<Props> = ({
         attributionPosition="bottom-left"
         nodesConnectable={false}
       >
+        {displayArea === 'main' && <SchemaBackgrounds />}
         <Background
           color="var(--color-gray-600)"
           variant={BackgroundVariant.Dots}

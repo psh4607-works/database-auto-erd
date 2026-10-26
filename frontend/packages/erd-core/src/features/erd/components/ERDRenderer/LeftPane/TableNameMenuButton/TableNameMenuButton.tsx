@@ -20,6 +20,7 @@ import { useUserEditingOrThrow } from '../../../../../../stores'
 import { selectTableLogEvent } from '../../../../../gtm/utils'
 import { useTableSelection } from '../../../../hooks'
 import type { TableNodeType } from '../../../../types'
+import { splitTableName } from '../../../../utils/schemaGroups'
 import styles from './TableNameMenuButton.module.css'
 import { VisibilityButton } from './VisibilityButton'
 
@@ -137,7 +138,7 @@ export const TableNameMenuButton: FC<Props> = ({
               <>
                 <Table2 size="10px" />
                 <span ref={textRef} className={styles.tableName}>
-                  {name}
+                  {node.data.persistent ? splitTableName(name).table : name}
                 </span>
                 <VisibilityButton tableName={name} hidden={node.hidden} />
               </>

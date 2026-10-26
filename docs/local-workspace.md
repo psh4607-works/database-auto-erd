@@ -27,6 +27,7 @@ docker compose start
 1. Add a PostgreSQL connection and test it. For a database published on this Mac, use `host.docker.internal` and the published port, not `localhost` inside the container. TLS mode verifies the server certificate.
 2. Save the connection and select **Refresh schema**. The app reads catalog metadata in a read-only transaction with connection and statement timeouts. It never writes DDL or table data to the source database.
 3. Search tables, choose a schema, and focus related tables with the existing Liam controls.
+   The sidebar groups tables under collapsible schema headings. The canvas uses labeled, lightly shaded schema regions and shows short table names; internal qualified names and relationships remain unchanged. Tidy up arranges each schema separately. Regions follow visible tables as they move or hide.
 4. Move or hide tables, then use **Save view**. Refresh also saves the current layout first. Notes, colors, groups and logical relationships have their own save controls.
 5. **Compare last refresh** shows schema changes against the previous successful snapshot, including removed tables. Dashed purple edges are logical relationships, separate from actual foreign keys.
 

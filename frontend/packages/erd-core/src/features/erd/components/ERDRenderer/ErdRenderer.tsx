@@ -191,7 +191,7 @@ export const ERDRenderer: FC<Props> = ({
                   }
                 }}
               >
-                <LeftPane />
+                <LeftPane groupBySchema={Boolean(diagram)} />
               </ResizablePanel>
               <ResizableHandle
                 disabled={!open}

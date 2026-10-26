@@ -1,6 +1,6 @@
 import type { Node } from '@xyflow/react'
 import { describe, expect, it } from 'vitest'
-import { restorePositions } from './persistentLayout'
+import { areTableNodesMeasured, restorePositions } from './persistentLayout'
 
 describe('persistent diagram layout', () => {
   it('keeps saved coordinates and places new tables beyond the saved layout', () => {
@@ -18,5 +18,34 @@ describe('persistent diagram layout', () => {
       { id: 'users', position: { x: 50, y: 70 }, data: {} },
     ]
     expect(restorePositions(nodes, {})).toEqual(nodes)
+  })
+})
+
+describe('initial layout measurement', () => {
+  it('waits for every visible table so tall tables cannot overlap from missing dimensions', () => {
+    const measured: Node = {
+      id: 'app.first',
+      type: 'table',
+      data: {},
+      position: { x: 0, y: 0 },
+      measured: { width: 200, height: 800 },
+    }
+    const pending: Node = {
+      id: 'app.second',
+      type: 'table',
+      data: {},
+      position: { x: 0, y: 0 },
+    }
+    expect(areTableNodesMeasured([measured, pending])).toBe(false)
+    expect(
+      areTableNodesMeasured([measured, { ...pending, hidden: true }]),
+    ).toBe(true)
+    expect(
+      areTableNodesMeasured([
+        measured,
+        { ...pending, measured: { width: 200, height: 100 } },
+      ]),
+    ).toBe(true)
+    expect(areTableNodesMeasured([])).toBe(false)
   })
 })
